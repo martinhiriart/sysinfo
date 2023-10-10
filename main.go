@@ -6,6 +6,7 @@ import (
 	"github.com/elastic/go-sysinfo/types"
 	"github.com/martinhiriart/sysinfo/internal/styling"
 	"github.com/ncruces/zenity"
+	"log"
 	"net"
 	"os"
 	"os/user"
@@ -15,7 +16,7 @@ import (
 func getHostInfo() types.HostInfo {
 	host, err := sysinfo.Host()
 	if err != nil {
-		panic(err)
+		handleError(err, "Panic")
 	}
 	return host.Info()
 }
@@ -23,7 +24,7 @@ func getHostInfo() types.HostInfo {
 func getIPAddresses() []net.Addr {
 	interfIPs, err := net.InterfaceAddrs()
 	if err != nil {
-		panic(err)
+		handleError(err, "log")
 	}
 	return interfIPs
 }
@@ -31,9 +32,19 @@ func getIPAddresses() []net.Addr {
 func getCurrentUser() *user.User {
 	userInfo, err := user.Current()
 	if err != nil {
-		panic(err)
+		handleError(err, "log")
 	}
 	return userInfo
+}
+
+func handleError(err error, errType string) {
+	errType = strings.ToLower(errType)
+	switch errType {
+	case "panic":
+		panic(err)
+	default:
+		log.Fatalf("ERROR: %v\n", err)
+	}
 }
 
 func main() {
@@ -43,11 +54,11 @@ func main() {
 	userInfo := getCurrentUser()
 	hostname, err := os.Hostname()
 	if err != nil {
-		panic(err)
+		handleError(err, "log")
 	}
 	usrInfo, err := user.LookupId(userInfo.Uid)
 	if err != nil {
-		panic(err)
+		handleError(err, "log")
 	}
 
 	var v4IPs []string
@@ -82,7 +93,7 @@ func main() {
 		zenity.Icon("internal/assets/diagIcon.png"))
 
 	if err != nil {
-		panic(err)
+		handleError(err, "Panic")
 	}
 
 }
