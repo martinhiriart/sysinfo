@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/elastic/go-sysinfo"
 	"github.com/elastic/go-sysinfo/types"
@@ -9,9 +10,20 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
 	"os/user"
 	"strings"
 )
+
+type UserInfo struct {
+	name     string
+	password string
+	uid      string
+	gid      string
+	dir      string
+	shell    string
+	gecos    string
+}
 
 func getHostInfo() types.HostInfo {
 	host, err := sysinfo.Host()
@@ -45,6 +57,54 @@ func handleError(err error, errType string) {
 	default:
 		log.Fatalf("ERROR: %v\n", err)
 	}
+}
+
+func listAllUsers() []UserInfo {
+	usersCmd := exec.Command("dscacheutil", "-q", "user")
+	var stdout, stderr bytes.Buffer
+	usersCmd.Stdout = &stdout
+	usersCmd.Stderr = &stderr
+	err := usersCmd.Run()
+	if err != nil {
+		handleError(err, "Log")
+	}
+	usersStr, _ := string(stdout.Bytes()), string(stderr.Bytes())
+
+	newString := strings.Split(usersStr, "\n\n")
+
+	userList := []UserInfo{}
+	for _, entry := range newString {
+		var uInfo UserInfo
+		newString2 := strings.Split(entry, "\n")
+
+		for _, val := range newString2 {
+			valString := strings.Split(val, ": ")
+
+			switch valString[0] {
+			case "name":
+				uInfo.name = valString[1]
+			case "password":
+				uInfo.password = valString[1]
+			case "uid":
+				uInfo.uid = valString[1]
+			case "gid":
+				uInfo.gid = valString[1]
+			case "dir":
+				uInfo.dir = valString[1]
+			case "shell":
+				uInfo.shell = valString[1]
+			case "gecos":
+				uInfo.gecos = valString[1]
+			}
+
+		}
+
+		if strings.Contains(uInfo.dir, "/Users") {
+			userList = append(userList, uInfo)
+		}
+	}
+
+	return userList
 }
 
 func main() {
@@ -95,5 +155,7 @@ func main() {
 	if err != nil {
 		handleError(err, "Panic")
 	}
+
+	//listAllUsers()
 
 }
