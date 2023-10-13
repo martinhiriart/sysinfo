@@ -5,6 +5,7 @@ package os_scripts
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/martinhiriart/sysinfo/internal/styling"
 	"os/exec"
 	"strings"
