@@ -1,6 +1,8 @@
 package styling
 
-import "strings"
+import (
+	"strings"
+)
 
 func FormatString(stringsToFormat []string) string {
 	outputString := strings.Join(stringsToFormat, "\n")
