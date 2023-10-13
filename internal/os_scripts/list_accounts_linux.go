@@ -4,13 +4,16 @@
 package os_scripts
 
 import (
+	"bytes"
+	"fmt"
+	"github.com/martinhiriart/sysinfo/internal/styling"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
 type AccountInfo struct {
 	Name        string
-	Password    string
 	Uid         string
 	Gid         string
 	HomeDir     string
@@ -34,32 +37,43 @@ func ListAllAccounts() []AccountInfo {
 	accountsList := []AccountInfo{}
 	for _, entry := range splitAccountsString {
 		var aInfo AccountInfo
-		individualAccountStrings := strings.Split(entry, ":")
+		entry = strings.Replace(entry, ":", ";", -1)
 
-		for _, val := range individualAccountStrings {
-			valString := strings.Split(val, ": ")
+		individualAccountStrings := strings.Split(entry, ";")
 
-			switch valString[0] {
-			case "name":
-				aInfo.Name = valString[1]
-			case "password":
-				aInfo.Password = valString[1]
-			case "uid":
-				aInfo.Uid = valString[1]
-			case "gid":
-				aInfo.Gid = valString[1]
-			case "dir":
-				aInfo.HomeDir = valString[1]
-			case "shell":
-				aInfo.Shell = valString[1]
-			case "gecos":
-				aInfo.DisplayName = valString[1]
-			}
-
+		if len(individualAccountStrings) > 1 {
+			aInfo.Name = individualAccountStrings[0]
+			aInfo.Uid = individualAccountStrings[2]
+			aInfo.Gid = individualAccountStrings[3]
+			aInfo.DisplayName = individualAccountStrings[4]
+			aInfo.HomeDir = individualAccountStrings[5]
+			aInfo.Shell = individualAccountStrings[6]
 		}
 
 		accountsList = append(accountsList, aInfo)
 	}
-
 	return accountsList
+}
+
+func PrintAccountData(allAccounts []AccountInfo, printType string) {
+	printType = strings.ToLower(printType)
+	switch printType {
+	case "user", "users":
+		for _, user := range allAccounts {
+			if user.Uid != "" {
+				uidInt, err := strconv.Atoi(user.Uid)
+				if err != nil {
+					styling.StyleErrors(err, "log")
+				}
+				if uidInt > 500 && !strings.Contains(user.HomeDir, "/nonexistent") {
+					fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\n", user.Name, user.Uid, user.Gid, user.HomeDir, user.Shell, user.DisplayName)
+				}
+			}
+		}
+	case "all":
+		for _, user := range allAccounts {
+			fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\n", user.Name, user.Uid, user.Gid, user.HomeDir, user.Shell, user.DisplayName)
+		}
+	}
+
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/elastic/go-sysinfo"
 	"github.com/elastic/go-sysinfo/types"
 	"github.com/martinhiriart/sysinfo/internal/commands"
+	"github.com/martinhiriart/sysinfo/internal/os_scripts"
 	"github.com/martinhiriart/sysinfo/internal/styling"
 	"github.com/ncruces/zenity"
 	"net"
@@ -89,5 +90,5 @@ func diplayQuickInfoDialog() {
 func main() {
 
 	allAccounts := commands.GetAccounts()
-	commands.PrintAccountData(allAccounts, "All")
+	os_scripts.PrintAccountData(allAccounts, "Users")
 }

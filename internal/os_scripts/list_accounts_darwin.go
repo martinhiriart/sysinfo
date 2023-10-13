@@ -12,7 +12,6 @@ import (
 
 type AccountInfo struct {
 	Name        string
-	Password    string
 	Uid         string
 	Gid         string
 	HomeDir     string
@@ -44,8 +43,6 @@ func ListAllAccounts() []AccountInfo {
 			switch valString[0] {
 			case "name":
 				aInfo.Name = valString[1]
-			case "password":
-				aInfo.Password = valString[1]
 			case "uid":
 				aInfo.Uid = valString[1]
 			case "gid":
@@ -66,48 +63,19 @@ func ListAllAccounts() []AccountInfo {
 	return userList
 }
 
-func ListAllAccountsLinux() []AccountInfo {
-	accountsCmd := exec.Command("cat", "/etc/passwd")
-	var stdout, stderr bytes.Buffer
-	accountsCmd.Stdout = &stdout
-	accountsCmd.Stderr = &stderr
-	err := accountsCmd.Run()
-	if err != nil {
-		styling.StyleErrors(err, "Log")
-	}
-	accountsStr, _ := string(stdout.Bytes()), string(stderr.Bytes())
-
-	splitAccountsString := strings.Split(accountsStr, "\n")
-
-	accountsList := []AccountInfo{}
-	for _, entry := range splitAccountsString {
-		var aInfo AccountInfo
-		individualAccountStrings := strings.Split(entry, ":")
-
-		for _, val := range individualAccountStrings {
-			valString := strings.Split(val, ": ")
-
-			switch valString[0] {
-			case "name":
-				aInfo.Name = valString[1]
-			case "password":
-				aInfo.Password = valString[1]
-			case "uid":
-				aInfo.Uid = valString[1]
-			case "gid":
-				aInfo.Gid = valString[1]
-			case "dir":
-				aInfo.HomeDir = valString[1]
-			case "shell":
-				aInfo.Shell = valString[1]
-			case "gecos":
-				aInfo.DisplayName = valString[1]
+func PrintAccountData(allAccounts []AccountInfo, printType string) {
+	printType = strings.ToLower(printType)
+	switch printType {
+	case "user", "users":
+		for _, user := range allAccounts {
+			if strings.Contains(user.HomeDir, "/Users") {
+				fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\n", user.Name, user.Uid, user.Gid, user.HomeDir, user.Shell, user.DisplayName)
 			}
-
 		}
-
-		accountsList = append(accountsList, aInfo)
+	case "all":
+		for _, user := range allAccounts {
+			fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\n", user.Name, user.Uid, user.Gid, user.HomeDir, user.Shell, user.DisplayName)
+		}
 	}
 
-	return accountsList
 }
