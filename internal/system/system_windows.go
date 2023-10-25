@@ -18,8 +18,8 @@ type SysInfo []struct {
 }
 
 func GetSystemInfo() SysInfo {
-	queryText := "echo SELECT \"hostname, cpu_brand, physical_memory, hardware_vendor, hardware_model, hardware_serial, board_serial, computer_name FROM system_info;\" | osqueryi --json"
-	query, err := exec.Command("bash", "-c", queryText).Output()
+	queryText := "echo SELECT \"hostname, cpu_brand, physical_memory, hardware_vendor, hardware_model, hardware_serial, board_serial, computer_name FROM system_info;\" | . \"C:\\Program Files\\osquery\\osqueryi.exe\" --json"
+	query, err := exec.Command("cmd", "/c", queryText).Output()
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	}

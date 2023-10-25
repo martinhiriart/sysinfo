@@ -13,7 +13,8 @@ type OSInfo []struct {
 }
 
 func GetOSInfo() OSInfo {
-	query, err := exec.Command("bash", "-c", "echo \"SELECT name, version, arch FROM os_version;\" | osqueryi --json").Output()
+	queryText := "echo \"SELECT name, version, arch FROM os_version;\" | . \"C:\\Program Files\\osquery\\osqueryi.exe\" --json"
+	query, err := exec.Command("cmd", "/c", queryText).Output()
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	}

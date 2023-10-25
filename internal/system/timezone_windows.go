@@ -11,8 +11,8 @@ type TimeZone []struct {
 }
 
 func GetTimeZone() TimeZone {
-	queryText := "echo SELECT \"local_timezone FROM time;\" | osqueryi --json"
-	query, err := exec.Command("bash", "-c", queryText).Output()
+	queryText := "echo SELECT \"local_timezone FROM time;\" | . \"C:\\Program Files\\osquery\\osqueryi.exe\" --json"
+	query, err := exec.Command("cmd", "/c", queryText).Output()
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	}
