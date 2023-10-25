@@ -14,7 +14,7 @@ type OSInfo []struct {
 
 func GetOSInfo() OSInfo {
 	queryText := "echo \"SELECT name, version, arch FROM os_version;\" | . \"C:\\Program Files\\osquery\\osqueryi.exe\" --json"
-	query, err := exec.Command("cmd", "/c", queryText).Output()
+	query, err := exec.Command("powershell", queryText).Output()
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	}

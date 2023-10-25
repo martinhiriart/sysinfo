@@ -17,7 +17,7 @@ type NetInfo []struct {
 
 func GetNetworkInterfaceInfo() NetInfo {
 	queryText := "echo \"SELECT interface, address, mask,point_to_point, type, friendly_name FROM interface_addresses WHERE interface NOT LIKE 'lo0';\" | . \"C:\\Program Files\\osquery\\osqueryi.exe\" --json"
-	query, err := exec.Command("cmd", "/c", queryText).Output()
+	query, err := exec.Command("powershell", queryText).Output()
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	}

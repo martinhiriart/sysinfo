@@ -12,7 +12,7 @@ type TimeZone []struct {
 
 func GetTimeZone() TimeZone {
 	queryText := "echo SELECT \"local_timezone FROM time;\" | . \"C:\\Program Files\\osquery\\osqueryi.exe\" --json"
-	query, err := exec.Command("cmd", "/c", queryText).Output()
+	query, err := exec.Command("powershell", queryText).Output()
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	}
