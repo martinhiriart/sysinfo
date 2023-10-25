@@ -13,7 +13,8 @@ type AppInfo []struct {
 }
 
 func GetInstalledApps() AppInfo {
-	query, err := exec.Command("bash", "-c", "echo \"SELECT name, bundle_version, path FROM apps;\" | osqueryi --json").Output()
+	queryText := "echo \"SELECT name, bundle_version, path FROM apps;\" | osqueryi --json"
+	query, err := exec.Command("bash", "-c", queryText).Output()
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	}

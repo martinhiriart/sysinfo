@@ -16,7 +16,8 @@ type UserInfo []struct {
 }
 
 func GetUserInfo() UserInfo {
-	query, err := exec.Command("bash", "-c", "echo \"SELECT username, description, directory, shell, uuid, type FROM users WHERE shell NOT LIKE '%false' AND username NOT LIKE '/_%' ESCAPE '/';\" | osqueryi --json").Output()
+	queryText := "echo \"SELECT username, description, directory, shell, uuid, type FROM users WHERE shell NOT LIKE '%false' AND username NOT LIKE '/_%' ESCAPE '/';\" | osqueryi --json"
+	query, err := exec.Command("bash", "-c", queryText).Output()
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	}
