@@ -9,7 +9,7 @@ func FormatString(stringsToFormat []string) string {
 	return outputString
 }
 
-func FormatIPStrings(IPs []string) string {
-	IPstring := strings.Join(IPs, ";\n\t\t\t\t ")
-	return IPstring
+func FormatMultiLineStrings(IPs []string) string {
+	multiString := strings.Join(IPs, ";\n\t\t\t\t")
+	return multiString
 }
